@@ -26,15 +26,15 @@ metadata:
   annotations:
     description: Defines how to deploy Heketi
 spec:
-  selector:
-  matchLabels:
-    glusterfs: heketi-pod
-    deploy-heketi: pod
   replicas: 1
+  selector:
+    matchLabels:
+      name: deploy-heketi
   template:
     metadata:
       name: deploy-heketi
       labels:
+        name: deploy-heketi
         glusterfs: heketi-pod
         deploy-heketi: pod
     spec:
