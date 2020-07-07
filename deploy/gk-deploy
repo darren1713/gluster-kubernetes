@@ -813,7 +813,7 @@ if [[ ${EXISTS_DEPLOY_HEKETI} -eq 1 ]] && [[ ${EXISTS_HEKETI} -eq 0 ]]; then
     heketi_service=$(${CLI} describe svc/deploy-heketi | grep "Endpoints:" | awk '{print $2}')
   done
 
-  heketi_pod=$(${CLI} get pod --no-headers --selector="deploy-heketi" | awk '{print $1}')
+  heketi_pod=$(${CLI} get pod --no-headers --selector="heketi" | awk '{print $1}')
 
   if [[ "${CLI}" == *oc\ * ]]; then
     heketi_service=$(${CLI} describe routes/deploy-heketi | grep "Requested Host:" | awk '{print $3}')
