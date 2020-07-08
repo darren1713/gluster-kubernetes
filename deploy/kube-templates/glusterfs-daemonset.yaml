@@ -20,6 +20,11 @@ spec:
         glusterfs: pod
         glusterfs-node: pod
     spec:
+      tolerations:
+      # this toleration is to have the daemonset runnable on master nodes
+      # remove it if your masters can't run pods
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
       nodeSelector:
         storagenode: glusterfs
       hostNetwork: true
