@@ -29,8 +29,8 @@ spec:
         storagenode: glusterfs
       hostNetwork: true
       containers:
-      - image: gluster/gluster-centos:latest
-        imagePullPolicy: IfNotPresent
+      - image: jpgeek/gluster-centos:latest
+        imagePullPolicy: Always
         name: glusterfs
         env:
         # alternative for /dev volumeMount to enable access to *all* devices

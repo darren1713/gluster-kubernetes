@@ -40,8 +40,8 @@ spec:
     spec:
       serviceAccountName: heketi-service-account
       containers:
-      - image: heketi/heketi:dev
-        imagePullPolicy: IfNotPresent
+      - image: heketi/heketi:latest
+        imagePullPolicy: Always
         name: deploy-heketi
         env:
         - name: HEKETI_USER_KEY
