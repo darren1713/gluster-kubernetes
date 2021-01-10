@@ -876,7 +876,7 @@ if [[ ${EXISTS_DEPLOY_HEKETI} -eq 1 ]] && [[ ${EXISTS_HEKETI} -eq 0 ]]; then
 
   # For glusterfs 6.0 and higher, turn off ctime or else we get errors with
   # older gluster clients
-  kubectl exec -i -t $(kubectl get pod -l "name=glusterfs" -o jsonpath='{.items[0].metadata.name}') -- gluster vol set heketidbstorage ctime off
+  kubectl exec -n ${NAMESPACE} -i -t $(kubectl get pod -l 'name=glusterfs' -o jsonpath='{.items[0].metadata.name}' -n ${NAMESPACE}) -- gluster vol set heketidbstorage ctime off
 
   eval_output "${CLI} exec -i ${heketi_pod} -- cat /tmp/heketi-storage.json | ${CLI} create -f - 2>&1"
   if [[ ${?} != 0 ]]; then
