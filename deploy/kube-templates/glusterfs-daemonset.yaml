@@ -29,7 +29,7 @@ spec:
         storagenode: glusterfs
       hostNetwork: true
       containers:
-      - image: jpgeek/gluster-centos:latest
+      - image: gluster/gluster-centos:latest
         imagePullPolicy: Always
         name: glusterfs
         env:

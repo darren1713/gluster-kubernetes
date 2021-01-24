@@ -42,6 +42,7 @@ SSH_PORT="22"
 ADMIN_KEY=""
 USER_KEY=""
 DAEMONSET_LABEL=""
+GLUSTER_IMAGE_NAME=""
 SINGLE_NODE=0
 DEPLOY_OBJECT=1
 OBJ_ACCOUNT=""
@@ -57,7 +58,8 @@ usage() {
        [--daemonset-label <DAEMONSET_LABEL> ] [--single-node] [--no-object]
        [--object-account <ACCOUNT>] [--object-user <USER>]
        [--object-password <PASSWORD>] [--object-sc <STORAGE_CLASS>]
-       [--object-capacity <CAPACITY>] [-l <LOG_FILE>] [--abort] [<TOPOLOGY>]\n"
+       [--object-capacity <CAPACITY>] [-l <LOG_FILE>] [--abort] [<TOPOLOGY>]
+       [--gluster-image-name <GLUSTER_IMAGE_NAME>] \n"
 }
 
 help_exit() {
@@ -121,6 +123,10 @@ Options:
               Controls the value of the label set on nodes which will host pods
               from the GlusterFS daemonset. This allows for multiple GlusterFS
               daemonsets to run in the same cluster. Default is 'glusterfs'.
+
+  --gluster-image-label GLUSTER_IMAGE_LABEL
+              Set what image the daemonset will deploy for the 'image:
+              ' parameter. For example: gluster/glusterfs-centos:latest
 
   --single-node
               Deploy as few pods as needed, no redundancy for the heketi
@@ -464,6 +470,11 @@ while [[ $# -ge 1 ]]; do
         if [[ $? -eq 2 ]]; then shift; fi
         keypos=$keylen
         ;;
+        -gluster-image-name*)
+        GLUSTER_IMAGE_NAME=$(assign "${key:${keypos}}" "${2}")
+        if [[ $? -eq 2 ]]; then shift; fi
+        keypos=$keylen
+        ;;
         -single-node)
         SINGLE_NODE=1
         keypos=$keylen
@@ -752,6 +763,9 @@ if [[ ${GLUSTER} -eq 1 ]] && [[ ${EXISTS_GLUSTERFS} -eq 0 ]] && [[ ${EXISTS_HEKE
   if [[ -z ${DAEMONSET_LABEL} ]]; then
     DAEMONSET_LABEL=glusterfs
   fi
+  if [[ -z ${GLUSTER_IMAGE_NAME} ]]; then
+    GLUSTER_IMAGE_NAME="gluster/gluster-centos:latest"
+  fi
   while read -r node; do
     debug "Marking '${node}' as a GlusterFS node."
     output "Marking '${node}' as a GlusterFS node."
@@ -766,7 +780,7 @@ if [[ ${GLUSTER} -eq 1 ]] && [[ ${EXISTS_GLUSTERFS} -eq 0 ]] && [[ ${EXISTS_HEKE
   if [[ "${CLI}" == *oc\ * ]]; then
     eval_output "${CLI} process ${OC_PROCESS_VAL_SWITCH} NODE_LABEL=${DAEMONSET_LABEL} glusterfs | ${CLI} create -f - 2>&1"
   else
-    eval_output "sed -e 's/storagenode\: glusterfs/storagenode\: '${DAEMONSET_LABEL}'/g' ${TEMPLATES}/glusterfs-daemonset.yaml | ${CLI} create -f - 2>&1"
+    eval_output "sed -e 's?storagenode: glusterfs?storagenode: ${DAEMONSET_LABEL}?g' ${TEMPLATES}/glusterfs-daemonset.yaml | sed -e 's?image: gluster/gluster-centos:latest?image: $GLUSTER_IMAGE_NAME?g' | ${CLI} create -f - 2>&1 "
   fi
 
   output -n "Waiting for GlusterFS pods to start ... "
